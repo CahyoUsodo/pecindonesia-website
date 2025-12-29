@@ -39,12 +39,12 @@ export default async function AdminLayout({
   // Middleware should have redirected to login if no session, but we show sidebar anyway
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="flex">
+      <div className="flex flex-col lg:flex-row">
         {/* Sidebar - Always render for non-login pages */}
         <AdminSidebarWrapper />
 
         {/* Main Content */}
-        <main className="flex-1 p-4 lg:p-8 pt-16 lg:pt-8">{children}</main>
+        <main className="flex-1 p-4 lg:p-8 pt-16 lg:pt-8 min-h-screen">{children}</main>
       </div>
     </div>
   )

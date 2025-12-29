@@ -61,17 +61,19 @@ export default function AdminSidebar({ userEmail, userRole }: AdminSidebarProps)
       <aside
         className={`
           fixed lg:static inset-y-0 left-0 z-40
-          w-64 bg-white shadow-sm min-h-screen
+          w-64 bg-white shadow-lg border-r
           transform transition-transform duration-300 ease-in-out
           ${isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
+          flex flex-col
+          h-screen lg:h-auto lg:min-h-screen
         `}
       >
-        <div className="p-6 border-b">
+        <div className="p-6 border-b flex-shrink-0">
           <div className="flex items-center justify-between">
-            <div className="flex-1">
+            <div className="flex-1 min-w-0">
               <h1 className="text-xl font-bold text-primary">PEC Admin</h1>
               {userEmail && (
-                <p className="text-sm text-gray-600 mt-1">{userEmail}</p>
+                <p className="text-sm text-gray-600 mt-1 truncate">{userEmail}</p>
               )}
               {userRole && (
                 <p className="text-xs text-primary font-semibold mt-1">
@@ -88,7 +90,7 @@ export default function AdminSidebar({ userEmail, userRole }: AdminSidebarProps)
             </button>
           </div>
         </div>
-        <nav className="p-4 space-y-2">
+        <nav className="p-4 space-y-2 flex-1 overflow-y-auto">
           {menuItems.length > 0 ? (
             menuItems.map((item) => {
               const Icon = item.icon
@@ -106,8 +108,8 @@ export default function AdminSidebar({ userEmail, userRole }: AdminSidebarProps)
                     }
                   `}
                 >
-                  <Icon size={20} />
-                  <span>{item.label}</span>
+                  <Icon size={20} className="flex-shrink-0" />
+                  <span className="whitespace-nowrap">{item.label}</span>
                 </Link>
               )
             })
@@ -115,7 +117,7 @@ export default function AdminSidebar({ userEmail, userRole }: AdminSidebarProps)
             <div className="text-sm text-gray-500 p-4">Menu sedang dimuat...</div>
           )}
         </nav>
-        <div className="p-4 border-t">
+        <div className="p-4 border-t flex-shrink-0">
           <AdminSignOut />
         </div>
       </aside>
