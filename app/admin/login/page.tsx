@@ -34,12 +34,11 @@ function LoginForm() {
         setError("Email atau password salah")
         setIsLoading(false)
       } else if (result?.ok) {
-        // Login successful - use router.push then reload to ensure session is set
-        router.push(callbackUrl)
-        // Force reload after a short delay to ensure session cookie is set
+        // Login successful - wait a bit for cookie to be set, then redirect
+        // Use window.location.href for full page reload to ensure session is read
         setTimeout(() => {
           window.location.href = callbackUrl
-        }, 100)
+        }, 200)
       }
     } catch (error) {
       setError("Terjadi kesalahan. Silakan coba lagi.")
