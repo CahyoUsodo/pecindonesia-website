@@ -3,6 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button"
 import { ArrowRight } from "lucide-react"
 import Link from "next/link"
+import { Service } from "@prisma/client"
 
 export const metadata = {
   title: "Layanan - PEC Indonesia",
@@ -10,7 +11,7 @@ export const metadata = {
 }
 
 export default async function ServicesPage() {
-  let services
+  let services: Service[] = []
   
   try {
     services = await prisma.service.findMany({
