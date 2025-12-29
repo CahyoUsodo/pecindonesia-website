@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import LoginWrapper from "./login-wrapper"
 
 function LoginForm() {
   const searchParams = useSearchParams()
@@ -34,11 +33,9 @@ function LoginForm() {
         setError("Email atau password salah")
         setIsLoading(false)
       } else if (result?.ok) {
-        // Login successful - wait a bit for cookie to be set, then redirect
-        // Use window.location.href for full page reload to ensure session is read
-        setTimeout(() => {
-          window.location.href = callbackUrl
-        }, 300)
+        // Login successful - use window.location for full page reload
+        // This ensures middleware can read the new session cookie
+        window.location.href = callbackUrl
       }
     } catch (error) {
       setError("Terjadi kesalahan. Silakan coba lagi.")
@@ -82,7 +79,7 @@ function LoginForm() {
   )
 }
 
-function LoginContent() {
+export default function AdminLoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <Card className="w-full max-w-md">
@@ -99,14 +96,6 @@ function LoginContent() {
         </CardContent>
       </Card>
     </div>
-  )
-}
-
-export default function AdminLoginPage() {
-  return (
-    <LoginWrapper>
-      <LoginContent />
-    </LoginWrapper>
   )
 }
 

@@ -5,6 +5,11 @@ import { getToken } from "next-auth/jwt"
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname
   
+  // Only handle /admin routes
+  if (!pathname.startsWith("/admin")) {
+    return NextResponse.next()
+  }
+  
   // Check token for all admin routes
   const token = await getToken({ 
     req: request,
@@ -16,29 +21,29 @@ export async function middleware(request: NextRequest) {
     if (token) {
       // User is already logged in, redirect to admin dashboard
       const callbackUrl = request.nextUrl.searchParams.get("callbackUrl") || "/admin"
-      return NextResponse.redirect(new URL(callbackUrl, request.url))
+      // Prevent redirect loop by checking if callbackUrl is not login page
+      if (callbackUrl !== "/admin/login") {
+        return NextResponse.redirect(new URL(callbackUrl, request.url))
+      }
+      return NextResponse.redirect(new URL("/admin", request.url))
     }
-    // Not logged in, allow access to login page with pathname header
+    // Not logged in, allow access to login page
     const response = NextResponse.next()
     response.headers.set("x-pathname", pathname)
     return response
   }
 
   // Protect other /admin routes - redirect to login if not authenticated
-  if (pathname.startsWith("/admin")) {
-    if (!token) {
-      const loginUrl = new URL("/admin/login", request.url)
-      loginUrl.searchParams.set("callbackUrl", pathname)
-      return NextResponse.redirect(loginUrl)
-    }
-    
-    // Authenticated, allow access with pathname header
-    const response = NextResponse.next()
-    response.headers.set("x-pathname", pathname)
-    return response
+  if (!token) {
+    const loginUrl = new URL("/admin/login", request.url)
+    loginUrl.searchParams.set("callbackUrl", pathname)
+    return NextResponse.redirect(loginUrl)
   }
-
-  return NextResponse.next()
+  
+  // Authenticated, allow access with pathname header
+  const response = NextResponse.next()
+  response.headers.set("x-pathname", pathname)
+  return response
 }
 
 export const config = {
