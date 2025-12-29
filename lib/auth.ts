@@ -18,8 +18,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             return null
           }
 
+          const email = credentials.email as string
+          const password = credentials.password as string
+
           const admin = await prisma.admin.findUnique({
-            where: { email: credentials.email },
+            where: { email },
           })
 
           if (!admin) {
@@ -27,7 +30,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           }
 
           const isPasswordValid = await bcrypt.compare(
-            credentials.password,
+            password,
             admin.password
           )
 
