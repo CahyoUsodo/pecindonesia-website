@@ -2,15 +2,15 @@
 
 import { useState, Suspense } from "react"
 import { signIn } from "next-auth/react"
-import { useSearchParams, useRouter } from "next/navigation"
+import { useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import LoginWrapper from "./login-wrapper"
 
 function LoginForm() {
   const searchParams = useSearchParams()
-  const router = useRouter()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
@@ -38,7 +38,7 @@ function LoginForm() {
         // Use window.location.href for full page reload to ensure session is read
         setTimeout(() => {
           window.location.href = callbackUrl
-        }, 200)
+        }, 300)
       }
     } catch (error) {
       setError("Terjadi kesalahan. Silakan coba lagi.")
@@ -82,7 +82,7 @@ function LoginForm() {
   )
 }
 
-export default function AdminLoginPage() {
+function LoginContent() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
       <Card className="w-full max-w-md">
@@ -99,6 +99,14 @@ export default function AdminLoginPage() {
         </CardContent>
       </Card>
     </div>
+  )
+}
+
+export default function AdminLoginPage() {
+  return (
+    <LoginWrapper>
+      <LoginContent />
+    </LoginWrapper>
   )
 }
 

@@ -1,3 +1,5 @@
+import { redirect } from "next/navigation"
+import { headers } from "next/headers"
 import { getServerSession } from "@/lib/get-session"
 import AdminSidebarWrapper from "@/components/admin-sidebar-wrapper"
 
@@ -10,6 +12,17 @@ export default async function AdminLayout({
   children: React.ReactNode
 }) {
   const session = await getServerSession()
+  const headersList = headers()
+  const pathname = headersList.get("x-pathname") || ""
+  
+  // Check if we're on login page
+  const isLoginPage = pathname === "/admin/login" || pathname.includes("/admin/login")
+  
+  // If user is authenticated and on login page, redirect to dashboard
+  // This prevents login form from showing when user is already logged in
+  if (session && isLoginPage) {
+    redirect("/admin")
+  }
 
   // If no session, just render children (middleware will handle redirect to login)
   // This allows login page to render without sidebar
@@ -21,7 +34,7 @@ export default async function AdminLayout({
     )
   }
 
-  // User is authenticated - show full admin layout with sidebar
+  // User is authenticated and not on login page - show full admin layout with sidebar
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="flex">
