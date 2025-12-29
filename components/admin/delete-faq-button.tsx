@@ -26,9 +26,11 @@ export default function DeleteFaqButton({ faqId }: DeleteFaqButtonProps) {
       })
 
       if (response.ok) {
-        router.refresh()
+        // Force hard refresh to ensure data is updated
+        window.location.reload()
       } else {
-        alert("Gagal menghapus FAQ")
+        const errorData = await response.json().catch(() => ({ error: "Gagal menghapus FAQ" }))
+        alert(errorData.error || "Gagal menghapus FAQ")
       }
     } catch (error) {
       alert("Terjadi kesalahan")

@@ -5,6 +5,10 @@ import Link from "next/link"
 import { Plus, Edit } from "lucide-react"
 import DeleteFaqButton from "@/components/admin/delete-faq-button"
 
+// Force dynamic rendering to prevent caching issues
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export default async function AdminFaqsPage() {
   const faqs = await prisma.faq.findMany({
     orderBy: { createdAt: "desc" },

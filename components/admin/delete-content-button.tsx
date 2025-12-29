@@ -26,9 +26,11 @@ export default function DeleteContentButton({ contentId }: DeleteContentButtonPr
       })
 
       if (response.ok) {
-        router.refresh()
+        // Force hard refresh to ensure data is updated
+        window.location.reload()
       } else {
-        alert("Gagal menghapus konten")
+        const errorData = await response.json().catch(() => ({ error: "Gagal menghapus konten" }))
+        alert(errorData.error || "Gagal menghapus konten")
       }
     } catch (error) {
       alert("Terjadi kesalahan")

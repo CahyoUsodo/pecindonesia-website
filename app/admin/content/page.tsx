@@ -5,6 +5,10 @@ import Link from "next/link"
 import { Plus, Edit } from "lucide-react"
 import DeleteContentButton from "@/components/admin/delete-content-button"
 
+// Force dynamic rendering to prevent caching issues
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export default async function AdminContentPage() {
   const contents = await prisma.content.findMany({
     orderBy: { key: "asc" },

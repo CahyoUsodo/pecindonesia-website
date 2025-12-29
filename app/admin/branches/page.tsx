@@ -5,6 +5,10 @@ import Link from "next/link"
 import { Plus, Edit, MapPin } from "lucide-react"
 import DeleteBranchButton from "@/components/admin/delete-branch-button"
 
+// Force dynamic rendering to prevent caching issues
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export default async function AdminBranchesPage() {
   const branches = await prisma.branch.findMany({
     orderBy: { name: "asc" },

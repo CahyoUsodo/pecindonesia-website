@@ -5,6 +5,10 @@ import Link from "next/link"
 import { Plus, Edit, Trash2 } from "lucide-react"
 import DeleteServiceButton from "@/components/admin/delete-service-button"
 
+// Force dynamic rendering to prevent caching issues
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export default async function AdminServicesPage() {
   const services = await prisma.service.findMany({
     orderBy: { order: "asc" },

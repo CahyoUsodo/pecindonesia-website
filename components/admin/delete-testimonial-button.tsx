@@ -26,9 +26,11 @@ export default function DeleteTestimonialButton({ testimonialId }: DeleteTestimo
       })
 
       if (response.ok) {
-        router.refresh()
+        // Force hard refresh to ensure data is updated
+        window.location.reload()
       } else {
-        alert("Gagal menghapus testimoni")
+        const errorData = await response.json().catch(() => ({ error: "Gagal menghapus testimoni" }))
+        alert(errorData.error || "Gagal menghapus testimoni")
       }
     } catch (error) {
       alert("Terjadi kesalahan")

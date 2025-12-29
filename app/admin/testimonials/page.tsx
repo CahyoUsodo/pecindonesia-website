@@ -5,6 +5,10 @@ import Link from "next/link"
 import { Plus, Edit, Trash2 } from "lucide-react"
 import DeleteTestimonialButton from "@/components/admin/delete-testimonial-button"
 
+// Force dynamic rendering to prevent caching issues
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export default async function AdminTestimonialsPage() {
   const testimonials = await prisma.testimonial.findMany({
     orderBy: { createdAt: "desc" },

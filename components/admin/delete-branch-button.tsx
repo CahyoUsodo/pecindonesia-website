@@ -26,9 +26,11 @@ export default function DeleteBranchButton({ branchId }: DeleteBranchButtonProps
       })
 
       if (response.ok) {
-        router.refresh()
+        // Force hard refresh to ensure data is updated
+        window.location.reload()
       } else {
-        alert("Gagal menghapus cabang")
+        const errorData = await response.json().catch(() => ({ error: "Gagal menghapus cabang" }))
+        alert(errorData.error || "Gagal menghapus cabang")
       }
     } catch (error) {
       alert("Terjadi kesalahan")

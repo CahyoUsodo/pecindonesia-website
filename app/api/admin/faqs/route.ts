@@ -2,6 +2,28 @@ import { NextRequest, NextResponse } from "next/server"
 import { requireAdminPassword } from "@/lib/admin-auth"
 import { prisma } from "@/lib/prisma"
 
+export async function GET(request: NextRequest) {
+  const { valid, password } = requireAdminPassword(request)
+  
+  if (!valid) {
+    console.error("GET /api/admin/faqs - Unauthorized", {
+      hasPassword: !!password,
+    })
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  }
+
+  try {
+    const faqs = await prisma.faq.findMany({
+      orderBy: { createdAt: "desc" },
+    })
+
+    return NextResponse.json(faqs)
+  } catch (error) {
+    console.error("Error fetching FAQs:", error)
+    return NextResponse.json({ error: "Failed to fetch FAQs" }, { status: 500 })
+  }
+}
+
 export async function POST(request: NextRequest) {
   const { valid, password } = requireAdminPassword(request)
   

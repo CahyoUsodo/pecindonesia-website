@@ -26,9 +26,11 @@ export default function DeleteServiceButton({ serviceId }: DeleteServiceButtonPr
       })
 
       if (response.ok) {
-        router.refresh()
+        // Force hard refresh to ensure data is updated
+        window.location.reload()
       } else {
-        alert("Gagal menghapus layanan")
+        const errorData = await response.json().catch(() => ({ error: "Gagal menghapus layanan" }))
+        alert(errorData.error || "Gagal menghapus layanan")
       }
     } catch (error) {
       alert("Terjadi kesalahan")
