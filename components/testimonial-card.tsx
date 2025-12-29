@@ -22,7 +22,7 @@ export default function TestimonialCard({
       <CardContent className="p-6">
         {/* Top Section - Quote */}
         <div className="mb-4">
-          <p className="text-gray-700 italic leading-relaxed">"{reviewText}"</p>
+          <p className="text-gray-700 italic leading-relaxed">&ldquo;{reviewText}&rdquo;</p>
         </div>
 
         {/* Star Rating - Moved to top */}

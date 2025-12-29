@@ -10,14 +10,14 @@ import { Card } from "@/components/ui/card"
 export default function ChatbotWidget() {
   const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(false)
+  const [messages, setMessages] = useState<Array<{ role: "user" | "assistant"; content: string }>>([])
+  const [input, setInput] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
   
   // Don't render chatbot on admin pages
   if (pathname?.startsWith("/admin")) {
     return null
   }
-  const [messages, setMessages] = useState<Array<{ role: "user" | "assistant"; content: string }>>([])
-  const [input, setInput] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
 
   // Helper to render message content with clickable links (WhatsApp, Google Maps, dll)
   const renderMessageContent = (text: string) => {
