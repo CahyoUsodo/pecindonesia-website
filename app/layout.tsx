@@ -5,6 +5,7 @@ import StructuredData from "@/components/structured-data"
 import Navbar from "@/components/navbar"
 import Footer from "@/components/footer"
 import ChatbotWidget from "@/components/chatbot-widget"
+import { Providers } from "./providers"
 
 const inter = Inter({ subsets: ["latin"] })
 
@@ -35,10 +36,12 @@ export default function RootLayout({
         <StructuredData />
       </head>
       <body className={inter.className}>
-        <Navbar />
-        <main className="min-h-screen">{children}</main>
-        <Footer />
-        <ChatbotWidget />
+        <Providers>
+          <Navbar />
+          <main className="min-h-screen">{children}</main>
+          <Footer />
+          <ChatbotWidget />
+        </Providers>
       </body>
     </html>
   )
