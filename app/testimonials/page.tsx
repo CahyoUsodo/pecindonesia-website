@@ -3,6 +3,7 @@ import FadeInSection from "@/components/fade-in-section"
 import TestimonialsCarousel from "@/components/testimonials-carousel"
 import TestimonialCard from "@/components/testimonial-card"
 import AnimatedCard from "@/components/animated-card"
+import { Testimonial } from "@prisma/client"
 
 export const metadata = {
   title: "Testimoni - PEC Indonesia",
@@ -10,7 +11,7 @@ export const metadata = {
 }
 
 export default async function TestimonialsPage() {
-  let testimonials
+  let testimonials: Testimonial[] = []
   
   try {
     testimonials = await prisma.testimonial.findMany({
