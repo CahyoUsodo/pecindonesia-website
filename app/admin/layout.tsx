@@ -2,6 +2,9 @@ import { redirect } from "next/navigation"
 import { getServerSession } from "@/lib/get-session"
 import AdminSidebarWrapper from "@/components/admin-sidebar-wrapper"
 
+// Force all admin pages to be dynamic (not statically generated)
+export const dynamic = 'force-dynamic'
+
 export default async function AdminLayout({
   children,
 }: {
