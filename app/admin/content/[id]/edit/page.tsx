@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/select"
 import { ArrowLeft, Save } from "lucide-react"
 import Link from "next/link"
+import { adminFetchJson } from "@/lib/admin-api-client"
 
 interface EditContentPageProps {
   params: { id: string }
@@ -35,11 +36,7 @@ export default function EditContentPage({ params }: EditContentPageProps) {
   useEffect(() => {
     async function fetchContent() {
       try {
-        const response = await fetch(`/api/admin/content/${params.id}`)
-        if (!response.ok) {
-          throw new Error("Failed to fetch content")
-        }
-        const data = await response.json()
+        const data = await adminFetchJson(`/api/admin/content/${params.id}`)
         setFormData({
           key: data.key || "",
           value: data.value || "",
@@ -62,18 +59,10 @@ export default function EditContentPage({ params }: EditContentPageProps) {
     setIsLoading(true)
 
     try {
-      const response = await fetch(`/api/admin/content/${params.id}`, {
+      await adminFetchJson(`/api/admin/content/${params.id}`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify(formData),
       })
-
-      if (!response.ok) {
-        const data = await response.json()
-        throw new Error(data.error || "Failed to update content")
-      }
 
       router.push("/admin/content")
       router.refresh()

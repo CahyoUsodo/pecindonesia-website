@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { ArrowLeft, Save, Upload, X } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
+import { adminFetchJson, adminFetch } from "@/lib/admin-api-client"
 
 interface EditTestimonialPageProps {
   params: Promise<{ id: string }>
@@ -43,11 +44,7 @@ export default function EditTestimonialPage({ params }: EditTestimonialPageProps
 
     async function fetchTestimonial() {
       try {
-        const response = await fetch(`/api/admin/testimonials/${testimonialId}`)
-        if (!response.ok) {
-          throw new Error("Failed to fetch testimonial")
-        }
-        const data = await response.json()
+        const data = await adminFetchJson(`/api/admin/testimonials/${testimonialId}`)
         setFormData({
           studentName: data.studentName || "",
           role: data.role || "",
@@ -89,7 +86,7 @@ export default function EditTestimonialPage({ params }: EditTestimonialPageProps
       const uploadFormData = new FormData()
       uploadFormData.append("file", file)
 
-      const response = await fetch("/api/admin/upload", {
+      const response = await adminFetch("/api/admin/upload", {
         method: "POST",
         body: uploadFormData,
       })
@@ -114,18 +111,10 @@ export default function EditTestimonialPage({ params }: EditTestimonialPageProps
     setIsLoading(true)
 
     try {
-      const response = await fetch(`/api/admin/testimonials/${testimonialId}`, {
+      await adminFetchJson(`/api/admin/testimonials/${testimonialId}`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify(formData),
       })
-
-      if (!response.ok) {
-        const data = await response.json()
-        throw new Error(data.error || "Failed to update testimonial")
-      }
 
       router.push("/admin/testimonials")
       router.refresh()

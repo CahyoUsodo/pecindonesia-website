@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from "next/server"
-import { auth } from "@/lib/auth"
+import { requireAdminPassword } from "@/lib/admin-auth"
 import { prisma } from "@/lib/prisma"
 
 export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const session = await auth()
+  const { valid } = requireAdminPassword(request)
   
-  if (!session) {
+  if (!valid) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
@@ -38,9 +38,9 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const session = await auth()
+  const { valid } = requireAdminPassword(request)
   
-  if (!session) {
+  if (!valid) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
@@ -79,9 +79,9 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const session = await auth()
+  const { valid } = requireAdminPassword(request)
   
-  if (!session) {
+  if (!valid) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 

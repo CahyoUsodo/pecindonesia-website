@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Trash2 } from "lucide-react"
+import { adminFetch } from "@/lib/admin-api-client"
 
 interface DeleteFaqButtonProps {
   faqId: string
@@ -20,7 +21,7 @@ export default function DeleteFaqButton({ faqId }: DeleteFaqButtonProps) {
 
     setIsLoading(true)
     try {
-      const response = await fetch(`/api/admin/faqs/${faqId}`, {
+      const response = await adminFetch(`/api/admin/faqs/${faqId}`, {
         method: "DELETE",
       })
 

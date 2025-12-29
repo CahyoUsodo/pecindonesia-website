@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Textarea } from "@/components/ui/textarea"
 import { ArrowLeft, Save } from "lucide-react"
 import Link from "next/link"
+import { adminFetchJson, adminFetch } from "@/lib/admin-api-client"
 
 interface EditServicePageProps {
   params: Promise<{ id: string }>
@@ -40,11 +41,7 @@ export default function EditServicePage({ params }: EditServicePageProps) {
 
     async function fetchService() {
       try {
-        const response = await fetch(`/api/admin/services/${serviceId}`)
-        if (!response.ok) {
-          throw new Error("Failed to fetch service")
-        }
-        const data = await response.json()
+        const data = await adminFetchJson(`/api/admin/services/${serviceId}`)
         setFormData({
           title: data.title || "",
           description: data.description || "",
@@ -68,18 +65,10 @@ export default function EditServicePage({ params }: EditServicePageProps) {
     setIsLoading(true)
 
     try {
-      const response = await fetch(`/api/admin/services/${serviceId}`, {
+      await adminFetchJson(`/api/admin/services/${serviceId}`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify(formData),
       })
-
-      if (!response.ok) {
-        const data = await response.json()
-        throw new Error(data.error || "Failed to update service")
-      }
 
       router.push("/admin/services")
       router.refresh()

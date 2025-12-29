@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { ArrowLeft, Save, Upload, X } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
+import { adminFetchJson, adminFetch } from "@/lib/admin-api-client"
 
 export default function NewTestimonialPage() {
   const router = useRouter()
@@ -47,7 +48,7 @@ export default function NewTestimonialPage() {
       const uploadFormData = new FormData()
       uploadFormData.append("file", file)
 
-      const response = await fetch("/api/admin/upload", {
+      const response = await adminFetch("/api/admin/upload", {
         method: "POST",
         body: uploadFormData,
       })
@@ -72,18 +73,10 @@ export default function NewTestimonialPage() {
     setIsLoading(true)
 
     try {
-      const response = await fetch("/api/admin/testimonials", {
+      await adminFetchJson("/api/admin/testimonials", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify(formData),
       })
-
-      if (!response.ok) {
-        const data = await response.json()
-        throw new Error(data.error || "Failed to create testimonial")
-      }
 
       router.push("/admin/testimonials")
       router.refresh()

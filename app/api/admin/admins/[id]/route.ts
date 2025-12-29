@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
-import { auth } from "@/lib/auth"
+import { requireAdminPassword } from "@/lib/admin-auth"
 import { prisma } from "@/lib/prisma"
 import * as bcrypt from "bcryptjs"
 
@@ -7,15 +7,10 @@ export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const session = await auth()
+  const { valid } = requireAdminPassword(request)
   
-  if (!session) {
+  if (!valid) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
-
-  // Only SUPER_ADMIN can view other admins
-  if (session.user?.role !== "SUPER_ADMIN") {
-    return NextResponse.json({ error: "Forbidden" }, { status: 403 })
   }
 
   try {
@@ -45,15 +40,10 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const session = await auth()
+  const { valid } = requireAdminPassword(request)
   
-  if (!session) {
+  if (!valid) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
-
-  // Only SUPER_ADMIN can update other admins
-  if (session.user?.role !== "SUPER_ADMIN") {
-    return NextResponse.json({ error: "Forbidden: Only Super Admin can update admins" }, { status: 403 })
   }
 
   try {
@@ -109,20 +99,10 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const session = await auth()
+  const { valid } = requireAdminPassword(request)
   
-  if (!session) {
+  if (!valid) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
-
-  // Only SUPER_ADMIN can delete admins
-  if (session.user?.role !== "SUPER_ADMIN") {
-    return NextResponse.json({ error: "Forbidden: Only Super Admin can delete admins" }, { status: 403 })
-  }
-
-  // Prevent deleting own account
-  if (session.user?.id === params.id) {
-    return NextResponse.json({ error: "Cannot delete your own account" }, { status: 400 })
   }
 
   try {

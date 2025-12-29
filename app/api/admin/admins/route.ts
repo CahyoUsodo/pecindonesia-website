@@ -1,18 +1,13 @@
 import { NextRequest, NextResponse } from "next/server"
-import { auth } from "@/lib/auth"
+import { requireAdminPassword } from "@/lib/admin-auth"
 import { prisma } from "@/lib/prisma"
 import * as bcrypt from "bcryptjs"
 
 export async function POST(request: NextRequest) {
-  const session = await auth()
+  const { valid } = requireAdminPassword(request)
   
-  if (!session) {
+  if (!valid) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
-
-  // Only SUPER_ADMIN can create admins
-  if (session.user?.role !== "SUPER_ADMIN") {
-    return NextResponse.json({ error: "Forbidden: Only Super Admin can create admins" }, { status: 403 })
   }
 
   try {

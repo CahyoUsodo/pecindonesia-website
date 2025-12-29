@@ -1,18 +1,18 @@
 import { NextRequest, NextResponse } from "next/server"
-import { auth } from "@/lib/auth"
+import { requireAdminPassword } from "@/lib/admin-auth"
 import { prisma } from "@/lib/prisma"
 import * as bcrypt from "bcryptjs"
 
 export async function GET(request: NextRequest) {
-  const session = await auth()
+  const { valid } = requireAdminPassword(request)
   
-  if (!session) {
+  if (!valid) {
     return NextResponse.json({ error: "Tidak diizinkan" }, { status: 401 })
   }
 
   try {
-    const admin = await prisma.admin.findUnique({
-      where: { id: session.user?.id },
+    // Get first admin as default (since no session-based user)
+    const admin = await prisma.admin.findFirst({
       select: {
         id: true,
         email: true,
@@ -32,23 +32,27 @@ export async function GET(request: NextRequest) {
 }
 
 export async function PUT(request: NextRequest) {
-  const session = await auth()
+  const { valid } = requireAdminPassword(request)
   
-  if (!session) {
+  if (!valid) {
     return NextResponse.json({ error: "Tidak diizinkan" }, { status: 401 })
   }
 
   try {
     const body = await request.json()
-    const { email, currentPassword, newPassword } = body
+    const { email, currentPassword, newPassword, adminId } = body
 
     if (!email) {
       return NextResponse.json({ error: "Email wajib diisi" }, { status: 400 })
     }
 
+    if (!adminId) {
+      return NextResponse.json({ error: "Admin ID wajib diisi" }, { status: 400 })
+    }
+
     // Get current admin
     const admin = await prisma.admin.findUnique({
-      where: { id: session.user?.id },
+      where: { id: adminId },
     })
 
     if (!admin) {
@@ -90,7 +94,7 @@ export async function PUT(request: NextRequest) {
     }
 
     const updatedAdmin = await prisma.admin.update({
-      where: { id: session.user?.id },
+      where: { id: adminId },
       data: updateData,
       select: {
         id: true,

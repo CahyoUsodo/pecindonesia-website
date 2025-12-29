@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/select"
 import { ArrowLeft, Save } from "lucide-react"
 import Link from "next/link"
+import { adminFetchJson } from "@/lib/admin-api-client"
 
 export default function NewContentPage() {
   const router = useRouter()
@@ -33,18 +34,10 @@ export default function NewContentPage() {
     setIsLoading(true)
 
     try {
-      const response = await fetch("/api/admin/content", {
+      await adminFetchJson("/api/admin/content", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify(formData),
       })
-
-      if (!response.ok) {
-        const data = await response.json()
-        throw new Error(data.error || "Failed to create content")
-      }
 
       router.push("/admin/content")
       router.refresh()

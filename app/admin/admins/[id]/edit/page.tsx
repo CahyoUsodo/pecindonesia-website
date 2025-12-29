@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/select"
 import { ArrowLeft, Save } from "lucide-react"
 import Link from "next/link"
+import { adminFetchJson } from "@/lib/admin-api-client"
 
 interface EditAdminPageProps {
   params: Promise<{ id: string }>
@@ -46,11 +47,7 @@ export default function EditAdminPage({ params }: EditAdminPageProps) {
 
     async function fetchAdmin() {
       try {
-        const response = await fetch(`/api/admin/admins/${adminId}`)
-        if (!response.ok) {
-          throw new Error("Failed to fetch admin")
-        }
-        const data = await response.json()
+        const data = await adminFetchJson(`/api/admin/admins/${adminId}`)
         setFormData({
           email: data.email || "",
           password: "",
@@ -83,18 +80,10 @@ export default function EditAdminPage({ params }: EditAdminPageProps) {
         updateData.password = formData.password
       }
 
-      const response = await fetch(`/api/admin/admins/${adminId}`, {
+      await adminFetchJson(`/api/admin/admins/${adminId}`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify(updateData),
       })
-
-      if (!response.ok) {
-        const data = await response.json()
-        throw new Error(data.error || "Failed to update admin")
-      }
 
       router.push("/admin/admins")
       router.refresh()

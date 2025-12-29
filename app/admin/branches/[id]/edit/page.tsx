@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Textarea } from "@/components/ui/textarea"
 import { ArrowLeft, Save } from "lucide-react"
 import Link from "next/link"
+import { adminFetchJson } from "@/lib/admin-api-client"
 
 interface EditBranchPageProps {
   params: Promise<{ id: string }>
@@ -40,11 +41,7 @@ export default function EditBranchPage({ params }: EditBranchPageProps) {
 
     async function fetchBranch() {
       try {
-        const response = await fetch(`/api/admin/branches/${branchId}`)
-        if (!response.ok) {
-          throw new Error("Failed to fetch branch")
-        }
-        const data = await response.json()
+        const data = await adminFetchJson(`/api/admin/branches/${branchId}`)
         setFormData({
           name: data.name || "",
           address: data.address || "",
@@ -68,18 +65,10 @@ export default function EditBranchPage({ params }: EditBranchPageProps) {
     setIsLoading(true)
 
     try {
-      const response = await fetch(`/api/admin/branches/${branchId}`, {
+      await adminFetchJson(`/api/admin/branches/${branchId}`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify(formData),
       })
-
-      if (!response.ok) {
-        const data = await response.json()
-        throw new Error(data.error || "Failed to update branch")
-      }
 
       router.push("/admin/branches")
       router.refresh()

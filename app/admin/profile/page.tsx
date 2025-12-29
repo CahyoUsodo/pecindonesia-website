@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Save } from "lucide-react"
+import { adminFetchJson } from "@/lib/admin-api-client"
 
 export default function ProfilePage() {
   const router = useRouter()
@@ -24,11 +25,7 @@ export default function ProfilePage() {
   useEffect(() => {
     async function fetchProfile() {
       try {
-        const response = await fetch("/api/admin/profile")
-        if (!response.ok) {
-          throw new Error("Failed to fetch profile")
-        }
-        const data = await response.json()
+        const data = await adminFetchJson("/api/admin/profile")
         setFormData((prev) => ({
           ...prev,
           email: data.email || "",
@@ -77,18 +74,10 @@ export default function ProfilePage() {
         updateData.newPassword = formData.newPassword
       }
 
-      const response = await fetch("/api/admin/profile", {
+      await adminFetchJson("/api/admin/profile", {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify(updateData),
       })
-
-      if (!response.ok) {
-        const data = await response.json()
-        throw new Error(data.error || "Failed to update profile")
-      }
 
       setSuccess("Profil berhasil diperbarui!")
       setFormData((prev) => ({

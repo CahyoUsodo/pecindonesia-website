@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Textarea } from "@/components/ui/textarea"
 import { ArrowLeft, Save } from "lucide-react"
 import Link from "next/link"
+import { adminFetchJson } from "@/lib/admin-api-client"
 
 export default function NewFaqPage() {
   const router = useRouter()
@@ -25,18 +26,10 @@ export default function NewFaqPage() {
     setIsLoading(true)
 
     try {
-      const response = await fetch("/api/admin/faqs", {
+      await adminFetchJson("/api/admin/faqs", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify(formData),
       })
-
-      if (!response.ok) {
-        const data = await response.json()
-        throw new Error(data.error || "Failed to create FAQ")
-      }
 
       router.push("/admin/faqs")
       router.refresh()

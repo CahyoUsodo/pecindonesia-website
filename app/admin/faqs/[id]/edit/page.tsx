@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Textarea } from "@/components/ui/textarea"
 import { ArrowLeft, Save } from "lucide-react"
 import Link from "next/link"
+import { adminFetchJson } from "@/lib/admin-api-client"
 
 interface EditFaqPageProps {
   params: Promise<{ id: string }>
@@ -38,11 +39,7 @@ export default function EditFaqPage({ params }: EditFaqPageProps) {
 
     async function fetchFaq() {
       try {
-        const response = await fetch(`/api/admin/faqs/${faqId}`)
-        if (!response.ok) {
-          throw new Error("Failed to fetch FAQ")
-        }
-        const data = await response.json()
+        const data = await adminFetchJson(`/api/admin/faqs/${faqId}`)
         setFormData({
           question: data.question || "",
           answer: data.answer || "",
@@ -64,18 +61,10 @@ export default function EditFaqPage({ params }: EditFaqPageProps) {
     setIsLoading(true)
 
     try {
-      const response = await fetch(`/api/admin/faqs/${faqId}`, {
+      await adminFetchJson(`/api/admin/faqs/${faqId}`, {
         method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify(formData),
       })
-
-      if (!response.ok) {
-        const data = await response.json()
-        throw new Error(data.error || "Failed to update FAQ")
-      }
 
       router.push("/admin/faqs")
       router.refresh()

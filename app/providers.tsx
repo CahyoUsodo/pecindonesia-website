@@ -1,8 +1,7 @@
 "use client"
 
-import { SessionProvider } from "next-auth/react"
-
+// Providers wrapper - no longer needed for NextAuth, but kept for consistency
 export function Providers({ children }: { children: React.ReactNode }) {
-  return <SessionProvider>{children}</SessionProvider>
+  return <>{children}</>
 }
 

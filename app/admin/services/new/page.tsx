@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Textarea } from "@/components/ui/textarea"
 import { ArrowLeft, Save } from "lucide-react"
 import Link from "next/link"
+import { adminFetchJson } from "@/lib/admin-api-client"
 
 export default function NewServicePage() {
   const router = useRouter()
@@ -40,18 +41,10 @@ export default function NewServicePage() {
     setIsLoading(true)
 
     try {
-      const response = await fetch("/api/admin/services", {
+      await adminFetchJson("/api/admin/services", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify(formData),
       })
-
-      if (!response.ok) {
-        const data = await response.json()
-        throw new Error(data.error || "Failed to create service")
-      }
 
       router.push("/admin/services")
       router.refresh()

@@ -1,11 +1,11 @@
 import { NextRequest, NextResponse } from "next/server"
-import { auth } from "@/lib/auth"
+import { requireAdminPassword } from "@/lib/admin-auth"
 import { uploadImage } from "@/lib/cloudinary"
 
 export async function POST(request: NextRequest) {
-  const session = await auth()
+  const { valid } = requireAdminPassword(request)
   
-  if (!session) {
+  if (!valid) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 

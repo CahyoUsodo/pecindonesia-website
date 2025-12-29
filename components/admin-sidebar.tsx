@@ -3,19 +3,14 @@
 import { useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { LayoutDashboard, FileText, Users, MapPin, BookOpen, HelpCircle, X, Menu, UserCog, Settings } from "lucide-react"
+import { LayoutDashboard, FileText, Users, MapPin, BookOpen, HelpCircle, X, Menu } from "lucide-react"
 import AdminSignOut from "@/components/admin-signout"
 
-interface AdminSidebarProps {
-  userEmail?: string
-  userRole?: string
-}
-
-export default function AdminSidebar({ userEmail, userRole }: AdminSidebarProps) {
+export default function AdminSidebar() {
   const [isOpen, setIsOpen] = useState(false)
   const pathname = usePathname()
 
-  // Always show menu items - userEmail and userRole are optional
+  // Menu items - no role-based access needed
   const menuItems = [
     { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
     { href: "/admin/content", label: "Konten", icon: FileText },
@@ -23,15 +18,7 @@ export default function AdminSidebar({ userEmail, userRole }: AdminSidebarProps)
     { href: "/admin/testimonials", label: "Testimoni", icon: Users },
     { href: "/admin/branches", label: "Cabang", icon: MapPin },
     { href: "/admin/faqs", label: "FAQ", icon: HelpCircle },
-    // Only show admin management for SUPER_ADMIN
-    ...(userRole === "SUPER_ADMIN" ? [{ href: "/admin/admins", label: "Manajemen Admin", icon: UserCog }] : []),
-    { href: "/admin/profile", label: "Profil", icon: Settings },
   ]
-
-  // Debug in development
-  if (process.env.NODE_ENV === "development") {
-    console.log("AdminSidebar - Props:", { userEmail, userRole, menuItemsCount: menuItems.length })
-  }
 
   const toggleSidebar = () => setIsOpen(!isOpen)
   const closeSidebar = () => setIsOpen(false)
@@ -72,14 +59,6 @@ export default function AdminSidebar({ userEmail, userRole }: AdminSidebarProps)
           <div className="flex items-center justify-between">
             <div className="flex-1 min-w-0">
               <h1 className="text-xl font-bold text-primary">PEC Admin</h1>
-              {userEmail && (
-                <p className="text-sm text-gray-600 mt-1 truncate">{userEmail}</p>
-              )}
-              {userRole && (
-                <p className="text-xs text-primary font-semibold mt-1">
-                  {userRole === "SUPER_ADMIN" ? "Super Admin" : "Admin"}
-                </p>
-              )}
             </div>
             <button
               onClick={closeSidebar}

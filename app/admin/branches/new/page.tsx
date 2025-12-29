@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Textarea } from "@/components/ui/textarea"
 import { ArrowLeft, Save } from "lucide-react"
 import Link from "next/link"
+import { adminFetchJson } from "@/lib/admin-api-client"
 
 export default function NewBranchPage() {
   const router = useRouter()
@@ -27,18 +28,10 @@ export default function NewBranchPage() {
     setIsLoading(true)
 
     try {
-      const response = await fetch("/api/admin/branches", {
+      await adminFetchJson("/api/admin/branches", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
         body: JSON.stringify(formData),
       })
-
-      if (!response.ok) {
-        const data = await response.json()
-        throw new Error(data.error || "Failed to create branch")
-      }
 
       router.push("/admin/branches")
       router.refresh()
