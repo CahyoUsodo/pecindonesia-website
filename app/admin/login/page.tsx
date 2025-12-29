@@ -2,7 +2,7 @@
 
 import { useState, Suspense } from "react"
 import { signIn } from "next-auth/react"
-import { useSearchParams } from "next/navigation"
+import { useSearchParams, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 
 function LoginForm() {
   const searchParams = useSearchParams()
+  const router = useRouter()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
@@ -33,9 +34,12 @@ function LoginForm() {
         setError("Email atau password salah")
         setIsLoading(false)
       } else if (result?.ok) {
-        // Login successful - use window.location for full page reload
-        // This ensures middleware can read the new session cookie
-        window.location.href = callbackUrl
+        // Login successful - refresh router to update session, then redirect
+        router.refresh()
+        // Use window.location for full page reload to ensure middleware reads the new session
+        setTimeout(() => {
+          window.location.href = callbackUrl
+        }, 200)
       }
     } catch (error) {
       setError("Terjadi kesalahan. Silakan coba lagi.")

@@ -22,7 +22,7 @@ export async function middleware(request: NextRequest) {
       // User is already logged in, redirect to admin dashboard
       const callbackUrl = request.nextUrl.searchParams.get("callbackUrl") || "/admin"
       // Prevent redirect loop by checking if callbackUrl is not login page
-      if (callbackUrl !== "/admin/login") {
+      if (callbackUrl && callbackUrl !== "/admin/login" && callbackUrl.startsWith("/admin")) {
         return NextResponse.redirect(new URL(callbackUrl, request.url))
       }
       return NextResponse.redirect(new URL("/admin", request.url))
@@ -30,6 +30,7 @@ export async function middleware(request: NextRequest) {
     // Not logged in, allow access to login page
     const response = NextResponse.next()
     response.headers.set("x-pathname", pathname)
+    response.headers.set("x-invoke-path", pathname)
     return response
   }
 
@@ -43,6 +44,7 @@ export async function middleware(request: NextRequest) {
   // Authenticated, allow access with pathname header
   const response = NextResponse.next()
   response.headers.set("x-pathname", pathname)
+  response.headers.set("x-invoke-path", pathname)
   return response
 }
 

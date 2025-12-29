@@ -12,10 +12,10 @@ export default async function AdminLayout({
 }) {
   const session = await getServerSession()
   const headersList = headers()
-  const pathname = headersList.get("x-pathname") || ""
+  const pathname = headersList.get("x-pathname") || headersList.get("x-invoke-path") || ""
   
   // Check if we're on login page
-  const isLoginPage = pathname === "/admin/login"
+  const isLoginPage = pathname === "/admin/login" || pathname.includes("/admin/login")
   
   // If on login page, don't show sidebar (middleware handles redirect if authenticated)
   if (isLoginPage) {
@@ -26,8 +26,8 @@ export default async function AdminLayout({
     )
   }
 
-  // If no session and not on login page, middleware should have redirected
-  // But just in case, render without sidebar
+  // If no session, render without sidebar (middleware should have redirected to login)
+  // But we render children anyway to avoid blank page
   if (!session) {
     return (
       <div className="min-h-screen bg-gray-50">
