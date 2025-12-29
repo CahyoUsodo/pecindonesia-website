@@ -23,19 +23,18 @@ function LoginForm() {
     try {
       const callbackUrl = searchParams.get("callbackUrl") || "/admin"
       
-      const result = await signIn("credentials", {
+      // Use redirect: true for server-side redirect handling
+      // This ensures the session cookie is properly set before redirect
+      await signIn("credentials", {
         email,
         password,
-        redirect: false,
+        callbackUrl,
+        redirect: true,
       })
-
-      if (result?.error) {
-        setError("Email atau password salah")
-        setIsLoading(false)
-      } else if (result?.ok) {
-        // Force full page reload to ensure session is set and middleware redirects
-        window.location.href = callbackUrl
-      }
+      
+      // If we get here, login failed (signIn with redirect:true only returns on error)
+      setError("Email atau password salah")
+      setIsLoading(false)
     } catch (error) {
       setError("Terjadi kesalahan. Silakan coba lagi.")
       setIsLoading(false)

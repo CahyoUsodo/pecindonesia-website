@@ -18,8 +18,10 @@ export async function middleware(request: NextRequest) {
       const callbackUrl = request.nextUrl.searchParams.get("callbackUrl") || "/admin"
       return NextResponse.redirect(new URL(callbackUrl, request.url))
     }
-    // Not logged in, allow access to login page
-    return NextResponse.next()
+    // Not logged in, allow access to login page with pathname header
+    const response = NextResponse.next()
+    response.headers.set("x-pathname", pathname)
+    return response
   }
 
   // Protect other /admin routes - redirect to login if not authenticated
@@ -30,8 +32,10 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(loginUrl)
     }
     
-    // Authenticated, allow access
-    return NextResponse.next()
+    // Authenticated, allow access with pathname header
+    const response = NextResponse.next()
+    response.headers.set("x-pathname", pathname)
+    return response
   }
 
   return NextResponse.next()
