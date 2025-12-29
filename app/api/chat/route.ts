@@ -125,7 +125,7 @@ function findBranchByLocation(message: string, branches: any[]): any | null {
     
     // Check if message contains parts of branch address
     const addressParts = branchAddressLower.split(/[,\s]+/)
-    const matchingParts = addressParts.filter(part => 
+    const matchingParts = addressParts.filter((part: string) => 
       part.length > 3 && messageLower.includes(part)
     )
     if (matchingParts.length > 0) {
