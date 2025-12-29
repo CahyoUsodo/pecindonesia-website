@@ -2,7 +2,7 @@
 
 import { useState, Suspense } from "react"
 import { signIn } from "next-auth/react"
-import { useSearchParams } from "next/navigation"
+import { useSearchParams, useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 
 function LoginForm() {
   const searchParams = useSearchParams()
+  const router = useRouter()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
@@ -23,18 +24,23 @@ function LoginForm() {
     try {
       const callbackUrl = searchParams.get("callbackUrl") || "/admin"
       
-      // Use redirect: true for server-side redirect handling
-      // This ensures the session cookie is properly set before redirect
-      await signIn("credentials", {
+      const result = await signIn("credentials", {
         email,
         password,
-        callbackUrl,
-        redirect: true,
+        redirect: false,
       })
-      
-      // If we get here, login failed (signIn with redirect:true only returns on error)
-      setError("Email atau password salah")
-      setIsLoading(false)
+
+      if (result?.error) {
+        setError("Email atau password salah")
+        setIsLoading(false)
+      } else if (result?.ok) {
+        // Login successful - use router.push then reload to ensure session is set
+        router.push(callbackUrl)
+        // Force reload after a short delay to ensure session cookie is set
+        setTimeout(() => {
+          window.location.href = callbackUrl
+        }, 100)
+      }
     } catch (error) {
       setError("Terjadi kesalahan. Silakan coba lagi.")
       setIsLoading(false)
