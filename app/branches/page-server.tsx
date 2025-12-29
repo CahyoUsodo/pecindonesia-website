@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma"
-import BranchesPageClient from "./page"
+import BranchesPageClient from "./branches-client"
 import { Branch } from "@prisma/client"
 
 export const metadata = {
