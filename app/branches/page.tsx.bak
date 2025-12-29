@@ -1,0 +1,227 @@
+"use client"
+
+import { useState, useMemo } from "react"
+import { prisma } from "@/lib/prisma"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { MapPin, Phone, ExternalLink, Search, X } from "lucide-react"
+
+// Helper function to convert phone number to WhatsApp format
+function formatWhatsAppNumber(phoneNumber: string): string {
+  // Remove all non-digit characters
+  let cleaned = phoneNumber.replace(/\D/g, "")
+  
+  // If starts with 0, replace with 62
+  if (cleaned.startsWith("0")) {
+    cleaned = "62" + cleaned.substring(1)
+  }
+  
+  // If doesn't start with 62, add it
+  if (!cleaned.startsWith("62")) {
+    cleaned = "62" + cleaned
+  }
+  
+  return `https://wa.me/${cleaned}`
+}
+
+interface Branch {
+  id: string
+  name: string
+  address: string
+  contactNumber: string | null
+  googleMapsLink: string | null
+}
+
+interface BranchesPageClientProps {
+  branches: Branch[]
+}
+
+export default function BranchesPageClient({ branches }: BranchesPageClientProps) {
+  const [searchQuery, setSearchQuery] = useState("")
+  const [selectedCity, setSelectedCity] = useState<string>("all")
+
+  // Extract unique cities from branches
+  const cities = useMemo(() => {
+    const citySet = new Set<string>()
+    branches.forEach((branch) => {
+      // Extract city from address (usually after "Kota" or "Kabupaten" or before comma)
+      const address = branch.address.toLowerCase()
+      const cityMatch = address.match(/(?:kota|kabupaten|kec\.|kecamatan)\s+([^,]+)|([^,]+)(?:,\s*(?:kota|kabupaten)\s+([^,]+))?/i)
+      if (cityMatch) {
+        const city = cityMatch[1] || cityMatch[2] || cityMatch[3]
+        if (city) {
+          citySet.add(city.trim())
+        }
+      }
+      // Also try to get city from common patterns
+      const parts = branch.address.split(",")
+      if (parts.length > 1) {
+        const possibleCity = parts[parts.length - 2]?.trim()
+        if (possibleCity && possibleCity.length > 3) {
+          citySet.add(possibleCity)
+        }
+      }
+    })
+    return Array.from(citySet).sort()
+  }, [branches])
+
+  // Filter branches based on search and city
+  const filteredBranches = useMemo(() => {
+    return branches.filter((branch) => {
+      // Search filter
+      const matchesSearch =
+        searchQuery === "" ||
+        branch.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        branch.address.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (branch.contactNumber &&
+          branch.contactNumber.includes(searchQuery))
+
+      // City filter
+      const matchesCity =
+        selectedCity === "all" ||
+        branch.address.toLowerCase().includes(selectedCity.toLowerCase())
+
+      return matchesSearch && matchesCity
+    })
+  }, [branches, searchQuery, selectedCity])
+
+  return (
+    <div className="py-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <div className="text-center mb-12">
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            Cabang Kami
+          </h1>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            Temukan lokasi cabang PEC terdekat dengan Anda
+          </p>
+        </div>
+
+        {/* Search and Filter Section */}
+        <div className="mb-8 space-y-4">
+          {/* Search Bar */}
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <Input
+              type="text"
+              placeholder="Cari cabang berdasarkan nama, alamat, atau nomor telepon..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-10 pr-10"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            )}
+          </div>
+
+          {/* City Filter */}
+          {cities.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              <button
+                onClick={() => setSelectedCity("all")}
+                className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                  selectedCity === "all"
+                    ? "bg-primary text-white"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                }`}
+              >
+                Semua Kota
+              </button>
+              {cities.map((city) => (
+                <button
+                  key={city}
+                  onClick={() => setSelectedCity(city)}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    selectedCity === city
+                      ? "bg-primary text-white"
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                }`}
+                >
+                  {city}
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Results Count */}
+          <div className="text-sm text-gray-600">
+            Menampilkan {filteredBranches.length} dari {branches.length} cabang
+          </div>
+        </div>
+
+        {/* Branches Grid */}
+        {filteredBranches.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {filteredBranches.map((branch) => (
+              <Card key={branch.id} className="hover:shadow-lg transition-shadow">
+                <CardHeader>
+                  <CardTitle className="text-xl flex items-center gap-2">
+                    <MapPin className="h-5 w-5 text-primary" />
+                    {branch.name}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div>
+                    <p className="text-sm text-gray-600 mb-1">Alamat:</p>
+                    <p className="text-gray-900">{branch.address}</p>
+                  </div>
+                  
+                  {branch.contactNumber && (
+                    <div>
+                      <p className="text-sm text-gray-600 mb-1">Telepon:</p>
+                      <div className="flex items-center gap-2">
+                        <Phone className="h-4 w-4 text-primary" />
+                        <a
+                          href={formatWhatsAppNumber(branch.contactNumber)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-primary hover:underline cursor-pointer"
+                        >
+                          {branch.contactNumber}
+                        </a>
+                      </div>
+                    </div>
+                  )}
+
+                  {branch.googleMapsLink && (
+                    <Button
+                      asChild
+                      variant="outline"
+                      className="w-full"
+                    >
+                      <a
+                        href={branch.googleMapsLink}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-center gap-2"
+                      >
+                        Buka di Google Maps
+                        <ExternalLink className="h-4 w-4" />
+                      </a>
+                    </Button>
+                  )}
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12">
+            <p className="text-gray-600 text-lg">
+              Tidak ada cabang yang ditemukan.
+            </p>
+            <p className="text-gray-500 text-sm mt-2">
+              Coba ubah kata kunci pencarian atau filter kota.
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}

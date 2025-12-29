@@ -1,0 +1,51 @@
+import { prisma } from "@/lib/prisma"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import Link from "next/link"
+import { Plus, Edit } from "lucide-react"
+import DeleteFaqButton from "@/components/admin/delete-faq-button"
+
+export default async function AdminFaqsPage() {
+  const faqs = await prisma.faq.findMany({
+    orderBy: { createdAt: "desc" },
+  })
+
+  return (
+    <div>
+      <div className="flex justify-between items-center mb-8">
+        <h1 className="text-3xl font-bold text-gray-900">FAQ</h1>
+        <Button asChild>
+          <Link href="/admin/faqs/new">
+            <Plus className="mr-2 h-4 w-4" />
+            Tambah FAQ
+          </Link>
+        </Button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {faqs.map((faq) => (
+          <Card key={faq.id}>
+            <CardHeader>
+              <CardTitle className="text-lg">{faq.question}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-gray-700 line-clamp-4 mb-4">
+                {faq.answer}
+              </p>
+              <div className="flex gap-2">
+                <Button asChild variant="outline" size="sm">
+                  <Link href={`/admin/faqs/${faq.id}/edit`}>
+                    <Edit className="mr-2 h-4 w-4" />
+                    Edit
+                  </Link>
+                </Button>
+                <DeleteFaqButton faqId={faq.id} />
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
+  )
+}
+
