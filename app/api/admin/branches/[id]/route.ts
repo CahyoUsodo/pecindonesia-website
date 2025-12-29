@@ -38,9 +38,12 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const { valid } = requireAdminPassword(request)
+  const { valid, password } = requireAdminPassword(request)
   
   if (!valid) {
+    console.error("PUT /api/admin/branches/[id] - Unauthorized", {
+      hasPassword: !!password,
+    })
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 

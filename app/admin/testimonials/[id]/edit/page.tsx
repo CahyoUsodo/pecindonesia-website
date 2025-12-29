@@ -111,15 +111,18 @@ export default function EditTestimonialPage({ params }: EditTestimonialPageProps
     setIsLoading(true)
 
     try {
-      await adminFetchJson(`/api/admin/testimonials/${testimonialId}`, {
+      const result = await adminFetchJson(`/api/admin/testimonials/${testimonialId}`, {
         method: "PUT",
         body: JSON.stringify(formData),
       })
 
+      console.log("Testimonial updated successfully:", result)
       router.push("/admin/testimonials")
       router.refresh()
     } catch (error: any) {
-      setError(error.message || "Terjadi kesalahan. Silakan coba lagi.")
+      console.error("Error updating testimonial:", error)
+      const errorMessage = error.message || "Terjadi kesalahan. Silakan coba lagi."
+      setError(errorMessage)
     } finally {
       setIsLoading(false)
     }

@@ -61,15 +61,18 @@ export default function EditFaqPage({ params }: EditFaqPageProps) {
     setIsLoading(true)
 
     try {
-      await adminFetchJson(`/api/admin/faqs/${faqId}`, {
+      const result = await adminFetchJson(`/api/admin/faqs/${faqId}`, {
         method: "PUT",
         body: JSON.stringify(formData),
       })
 
+      console.log("FAQ updated successfully:", result)
       router.push("/admin/faqs")
       router.refresh()
     } catch (error: any) {
-      setError(error.message || "Terjadi kesalahan. Silakan coba lagi.")
+      console.error("Error updating FAQ:", error)
+      const errorMessage = error.message || "Terjadi kesalahan. Silakan coba lagi."
+      setError(errorMessage)
     } finally {
       setIsLoading(false)
     }

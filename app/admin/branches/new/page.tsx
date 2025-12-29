@@ -28,15 +28,18 @@ export default function NewBranchPage() {
     setIsLoading(true)
 
     try {
-      await adminFetchJson("/api/admin/branches", {
+      const result = await adminFetchJson("/api/admin/branches", {
         method: "POST",
         body: JSON.stringify(formData),
       })
 
+      console.log("Branch created successfully:", result)
       router.push("/admin/branches")
       router.refresh()
     } catch (error: any) {
-      setError(error.message || "Terjadi kesalahan. Silakan coba lagi.")
+      console.error("Error creating branch:", error)
+      const errorMessage = error.message || "Terjadi kesalahan. Silakan coba lagi."
+      setError(errorMessage)
     } finally {
       setIsLoading(false)
     }

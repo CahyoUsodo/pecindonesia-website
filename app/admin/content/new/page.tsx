@@ -34,15 +34,18 @@ export default function NewContentPage() {
     setIsLoading(true)
 
     try {
-      await adminFetchJson("/api/admin/content", {
+      const result = await adminFetchJson("/api/admin/content", {
         method: "POST",
         body: JSON.stringify(formData),
       })
 
+      console.log("Content created successfully:", result)
       router.push("/admin/content")
       router.refresh()
     } catch (error: any) {
-      setError(error.message || "Terjadi kesalahan. Silakan coba lagi.")
+      console.error("Error creating content:", error)
+      const errorMessage = error.message || "Terjadi kesalahan. Silakan coba lagi."
+      setError(errorMessage)
     } finally {
       setIsLoading(false)
     }

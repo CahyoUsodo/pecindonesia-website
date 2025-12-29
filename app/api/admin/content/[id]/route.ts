@@ -32,9 +32,15 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const { valid } = requireAdminPassword(request)
+  const { valid, password } = requireAdminPassword(request)
   
   if (!valid) {
+    console.error("PUT /api/admin/content/[id] - Unauthorized", {
+      hasPassword: !!password,
+      headers: Array.from(request.headers.entries()).filter(([key]) => 
+        key.toLowerCase().includes("admin") || key.toLowerCase().includes("password")
+      ),
+    })
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
@@ -65,9 +71,12 @@ export async function PUT(
     })
 
     return NextResponse.json(updatedContent)
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error updating content:", error)
-    return NextResponse.json({ error: "Failed to update content" }, { status: 500 })
+    return NextResponse.json({ 
+      error: "Failed to update content",
+      details: process.env.NODE_ENV === "development" ? error.message : undefined
+    }, { status: 500 })
   }
 }
 

@@ -65,15 +65,18 @@ export default function EditBranchPage({ params }: EditBranchPageProps) {
     setIsLoading(true)
 
     try {
-      await adminFetchJson(`/api/admin/branches/${branchId}`, {
+      const result = await adminFetchJson(`/api/admin/branches/${branchId}`, {
         method: "PUT",
         body: JSON.stringify(formData),
       })
 
+      console.log("Branch updated successfully:", result)
       router.push("/admin/branches")
       router.refresh()
     } catch (error: any) {
-      setError(error.message || "Terjadi kesalahan. Silakan coba lagi.")
+      console.error("Error updating branch:", error)
+      const errorMessage = error.message || "Terjadi kesalahan. Silakan coba lagi."
+      setError(errorMessage)
     } finally {
       setIsLoading(false)
     }

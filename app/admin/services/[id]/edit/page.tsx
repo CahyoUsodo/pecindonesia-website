@@ -65,15 +65,18 @@ export default function EditServicePage({ params }: EditServicePageProps) {
     setIsLoading(true)
 
     try {
-      await adminFetchJson(`/api/admin/services/${serviceId}`, {
+      const result = await adminFetchJson(`/api/admin/services/${serviceId}`, {
         method: "PUT",
         body: JSON.stringify(formData),
       })
 
+      console.log("Service updated successfully:", result)
       router.push("/admin/services")
       router.refresh()
     } catch (error: any) {
-      setError(error.message || "Terjadi kesalahan. Silakan coba lagi.")
+      console.error("Error updating service:", error)
+      const errorMessage = error.message || "Terjadi kesalahan. Silakan coba lagi."
+      setError(errorMessage)
     } finally {
       setIsLoading(false)
     }

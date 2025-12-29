@@ -26,15 +26,18 @@ export default function NewFaqPage() {
     setIsLoading(true)
 
     try {
-      await adminFetchJson("/api/admin/faqs", {
+      const result = await adminFetchJson("/api/admin/faqs", {
         method: "POST",
         body: JSON.stringify(formData),
       })
 
+      console.log("FAQ created successfully:", result)
       router.push("/admin/faqs")
       router.refresh()
     } catch (error: any) {
-      setError(error.message || "Terjadi kesalahan. Silakan coba lagi.")
+      console.error("Error creating FAQ:", error)
+      const errorMessage = error.message || "Terjadi kesalahan. Silakan coba lagi."
+      setError(errorMessage)
     } finally {
       setIsLoading(false)
     }

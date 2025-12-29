@@ -73,15 +73,18 @@ export default function NewTestimonialPage() {
     setIsLoading(true)
 
     try {
-      await adminFetchJson("/api/admin/testimonials", {
+      const result = await adminFetchJson("/api/admin/testimonials", {
         method: "POST",
         body: JSON.stringify(formData),
       })
 
+      console.log("Testimonial created successfully:", result)
       router.push("/admin/testimonials")
       router.refresh()
     } catch (error: any) {
-      setError(error.message || "Terjadi kesalahan. Silakan coba lagi.")
+      console.error("Error creating testimonial:", error)
+      const errorMessage = error.message || "Terjadi kesalahan. Silakan coba lagi."
+      setError(errorMessage)
     } finally {
       setIsLoading(false)
     }

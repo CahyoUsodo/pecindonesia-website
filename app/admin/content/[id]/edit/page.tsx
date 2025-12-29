@@ -59,15 +59,19 @@ export default function EditContentPage({ params }: EditContentPageProps) {
     setIsLoading(true)
 
     try {
-      await adminFetchJson(`/api/admin/content/${params.id}`, {
+      const result = await adminFetchJson(`/api/admin/content/${params.id}`, {
         method: "PUT",
         body: JSON.stringify(formData),
       })
 
+      console.log("Content updated successfully:", result)
       router.push("/admin/content")
       router.refresh()
     } catch (error: any) {
-      setError(error.message || "Terjadi kesalahan. Silakan coba lagi.")
+      console.error("Error updating content:", error)
+      const errorMessage = error.message || "Terjadi kesalahan. Silakan coba lagi."
+      setError(errorMessage)
+      // Don't hide error immediately, let user see it
     } finally {
       setIsLoading(false)
     }

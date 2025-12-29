@@ -3,9 +3,12 @@ import { requireAdminPassword } from "@/lib/admin-auth"
 import { prisma } from "@/lib/prisma"
 
 export async function POST(request: NextRequest) {
-  const { valid } = requireAdminPassword(request)
+  const { valid, password } = requireAdminPassword(request)
   
   if (!valid) {
+    console.error("POST /api/admin/branches - Unauthorized", {
+      hasPassword: !!password,
+    })
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
   }
 
