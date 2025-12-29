@@ -1,23 +1,44 @@
-import { prisma } from "@/lib/prisma"
-import { getServerSession } from "@/lib/get-session"
-import { redirect } from "next/navigation"
+"use client"
+
+import { useEffect, useState } from "react"
+import AdminPasswordGuard from "@/components/admin-password-guard"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
-import { Plus, Edit, Trash2 } from "lucide-react"
+import { Plus, Edit } from "lucide-react"
 import DeleteAdminButton from "@/components/admin/delete-admin-button"
+import { adminFetchJson } from "@/lib/admin-api-client"
 
-export default async function AdminAdminsPage() {
-  const session = await getServerSession()
-  
-  // Only SUPER_ADMIN can access this page
-  if (!session || session.user?.role !== "SUPER_ADMIN") {
-    redirect("/admin")
+interface Admin {
+  id: string
+  email: string
+  role: string
+  createdAt: string
+  updatedAt: string
+}
+
+function AdminAdminsPageContent() {
+  const [admins, setAdmins] = useState<Admin[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function loadAdmins() {
+      try {
+        const data = await adminFetchJson<Admin[]>("/api/admin/admins")
+        setAdmins(data)
+      } catch (error) {
+        console.error("Error loading admins:", error)
+        setAdmins([])
+      } finally {
+        setLoading(false)
+      }
+    }
+    loadAdmins()
+  }, [])
+
+  if (loading) {
+    return <div className="text-center py-8">Memuat...</div>
   }
-
-  const admins = await prisma.admin.findMany({
-    orderBy: { createdAt: "desc" },
-  })
 
   return (
     <div>
@@ -50,16 +71,21 @@ export default async function AdminAdminsPage() {
                     Edit
                   </Link>
                 </Button>
-                {/* Don't allow deleting own account */}
-                {admin.id !== session.user?.id && (
-                  <DeleteAdminButton adminId={admin.id} />
-                )}
+                <DeleteAdminButton adminId={admin.id} />
               </div>
             </CardContent>
           </Card>
         ))}
       </div>
     </div>
+  )
+}
+
+export default function AdminAdminsPage() {
+  return (
+    <AdminPasswordGuard>
+      <AdminAdminsPageContent />
+    </AdminPasswordGuard>
   )
 }
 
