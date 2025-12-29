@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma"
 import BranchesPageClient from "./branches-client"
+import { Branch } from "@prisma/client"
 
 export const metadata = {
   title: "Cabang - PEC Indonesia",
@@ -7,7 +8,7 @@ export const metadata = {
 }
 
 export default async function BranchesPage() {
-  let branches
+  let branches: Branch[] = []
   
   try {
     branches = await prisma.branch.findMany({
