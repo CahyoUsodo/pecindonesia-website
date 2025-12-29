@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, useEffect, Suspense } from "react"
-import { signIn, useSession } from "next-auth/react"
+import { useState, Suspense } from "react"
+import { signIn } from "next-auth/react"
 import { useSearchParams } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -10,27 +10,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 
 function LoginForm() {
   const searchParams = useSearchParams()
-  const { status } = useSession()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [error, setError] = useState("")
   const [isLoading, setIsLoading] = useState(false)
-
-  // Jika sudah login, langsung redirect ke callbackUrl atau /admin
-  useEffect(() => {
-    if (status === "authenticated") {
-      const callbackUrl = searchParams.get("callbackUrl") || "/admin"
-      window.location.href = callbackUrl
-    }
-  }, [status, searchParams])
-
-  if (status === "loading" || status === "authenticated") {
-    return (
-      <div className="text-center py-4">
-        {status === "loading" ? "Memuat..." : "Mengalihkan..."}
-      </div>
-    )
-  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -49,11 +32,9 @@ function LoginForm() {
       if (result?.error) {
         setError("Email atau password salah")
         setIsLoading(false)
-      } else {
-        // Force full page reload in production to ensure session is set
-        if (result?.ok) {
-          window.location.href = callbackUrl
-        }
+      } else if (result?.ok) {
+        // Force full page reload to ensure session is set and middleware redirects
+        window.location.href = callbackUrl
       }
     } catch (error) {
       setError("Terjadi kesalahan. Silakan coba lagi.")
