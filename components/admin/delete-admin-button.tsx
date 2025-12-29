@@ -26,10 +26,11 @@ export default function DeleteAdminButton({ adminId }: DeleteAdminButtonProps) {
       })
 
       if (response.ok) {
-        router.refresh()
+        // Force hard refresh to ensure data is updated
+        window.location.reload()
       } else {
-        const data = await response.json()
-        alert(data.error || "Gagal menghapus admin")
+        const errorData = await response.json().catch(() => ({ error: "Gagal menghapus admin" }))
+        alert(errorData.error || "Gagal menghapus admin")
       }
     } catch (error) {
       alert("Terjadi kesalahan")
