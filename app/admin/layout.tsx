@@ -14,6 +14,15 @@ export default async function AdminLayout({
   const headersList = headers()
   const pathname = headersList.get("x-pathname") || headersList.get("x-invoke-path") || ""
   
+  // Debug in development
+  if (process.env.NODE_ENV === "development") {
+    console.log("AdminLayout - Session check:", {
+      hasSession: !!session,
+      pathname,
+      email: session?.user?.email,
+    })
+  }
+  
   // Check if we're on login page
   const isLoginPage = pathname === "/admin/login" || pathname.includes("/admin/login")
   
@@ -26,21 +35,12 @@ export default async function AdminLayout({
     )
   }
 
-  // If no session, render without sidebar (middleware should have redirected to login)
-  // But we render children anyway to avoid blank page
-  if (!session) {
-    return (
-      <div className="min-h-screen bg-gray-50">
-        {children}
-      </div>
-    )
-  }
-
-  // User is authenticated and not on login page - show full admin layout with sidebar
+  // Always show sidebar for non-login pages (even if session is missing, for debugging)
+  // Middleware should have redirected to login if no session, but we show sidebar anyway
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="flex">
-        {/* Sidebar */}
+        {/* Sidebar - Always render for non-login pages */}
         <AdminSidebarWrapper />
 
         {/* Main Content */}
