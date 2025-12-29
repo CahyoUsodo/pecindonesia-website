@@ -7,6 +7,10 @@ export const metadata = {
   description: "Pelajari lebih lanjut tentang sejarah, visi, dan misi PEC Indonesia sebagai lembaga pendidikan terbaik dan terbesar.",
 }
 
+// Force dynamic rendering to prevent caching issues
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export default async function AboutPage() {
   let history, vision, mission
   

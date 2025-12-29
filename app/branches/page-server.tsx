@@ -7,6 +7,10 @@ export const metadata = {
   description: "Temukan lokasi cabang PEC Indonesia terdekat. Kami hadir di Pamulang, Depok, dan Jakarta Selatan.",
 }
 
+// Force dynamic rendering to prevent caching issues
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export default async function BranchesPage() {
   let branches: Branch[] = []
   

@@ -10,6 +10,10 @@ export const metadata = {
   description: "Baca pengalaman dan kesuksesan siswa-siswa PEC Indonesia dalam mencapai prestasi terbaik mereka.",
 }
 
+// Force dynamic rendering to prevent caching issues
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export default async function TestimonialsPage() {
   let testimonials: Testimonial[] = []
   

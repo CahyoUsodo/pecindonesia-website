@@ -10,6 +10,10 @@ export const metadata = {
   description: "Jelajahi berbagai program pendidikan berkualitas di PEC Indonesia: English Course, Math Tutoring, dan Bimbingan Belajar.",
 }
 
+// Force dynamic rendering to prevent caching issues
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
 export default async function ServicesPage() {
   let services: Service[] = []
   
